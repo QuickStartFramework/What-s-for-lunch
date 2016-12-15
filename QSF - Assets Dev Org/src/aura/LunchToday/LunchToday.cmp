@@ -1,0 +1,42 @@
+<aura:component controller="LunchController" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName">
+    
+    <aura:attribute name="title" type="string" required="false" default="Today's Menu"/>
+    <aura:attribute name="todayDate" type="string"/>
+    <aura:attribute name="lunch" type="Lunch__c"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:card >
+        <aura:set attribute="title">
+            <span class="slds-avatar slds-avatar--circle slds-avatar--medium">
+                <img src="/resource/lunch_icon"/>
+            </span>
+            &nbsp;&nbsp;
+            <span class="slds-text-heading--small">
+            	{!v.title}
+            </span>
+            <aura:if isTrue="{!v.lunch == null}">
+                <span class="slds-text-body--small">
+                    &nbsp;- Lunch menu not available.
+                </span>
+            </aura:if>
+        </aura:set>
+        <aura:set attribute="actions">
+            <aura:if isTrue="{!v.lunch != null}">
+                <lightning:button label="View" onclick="{! c.viewTodayMenu }"/>
+            </aura:if>
+        </aura:set>
+        <p class="slds-p-horizontal--small">
+            <aura:if isTrue="{!v.lunch.Type__c == 'Normal'}">
+                <ul class="slds-has-dividers--top-space">
+                    <li class="slds-item"><ui:outputText value="{!v.lunch.Appetizer__c}" /></li>
+                    <li class="slds-item"><ui:outputText value="{!v.lunch.Course__c}" /></li>
+                    <li class="slds-item"><ui:outputText value="{!v.lunch.Desert__c}" /></li>
+                </ul>
+                <aura:set attribute="else">
+                    <ui:outputText value="{!v.lunch.Special_Menu__c}" />
+                </aura:set>
+            </aura:if>
+        </p>
+    </lightning:card>
+</aura:component>
