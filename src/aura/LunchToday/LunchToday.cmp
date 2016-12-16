@@ -1,0 +1,96 @@
+<aura:component controller="LunchController" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName">
+    
+    <aura:attribute name="title" type="string" required="false" default="Today's Menu"/>
+    <aura:attribute name="displayTodaysMenu" type="boolean" default="true"/>
+    <aura:attribute name="displayLunchMeetups" type="boolean" default="false"/>
+    <aura:attribute name="todayDate" type="string"/>
+    <aura:attribute name="lunch" type="Lunch__c"/>
+    <aura:attribute name="lunchMeetups" type="Lunch_Meetup__c[]"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.displayTodaysMenu}">
+        <lightning:card >
+            <aura:set attribute="title">
+                <span class="slds-avatar slds-avatar--circle slds-avatar--medium">
+                    <img src="/resource/lunch_icon"/>
+                </span>
+                &nbsp;&nbsp;
+                <span class="slds-text-heading--small">
+                    {!v.title}
+                </span>
+                <aura:if isTrue="{!v.lunch == null}">
+                    <span class="slds-text-body--small">
+                        &nbsp;- Lunch menu not available.
+                    </span>
+                </aura:if>
+            </aura:set>
+            <aura:set attribute="actions">
+                <aura:if isTrue="{!v.lunch != null}">
+                    <lightning:buttonIcon iconName="utility:preview" variant="bare" onclick="{! c.viewTodayMenu }" alternativeText="Close window." />
+                </aura:if>
+            </aura:set>
+            <p class="slds-p-horizontal--small">
+                <aura:if isTrue="{!v.lunch.Type__c == 'Normal'}">
+                    <ul class="slds-has-dividers--top-space">
+                        <li class="slds-item"><ui:outputText value="{!v.lunch.Appetizer__c}" /></li>
+                        <li class="slds-item"><ui:outputText value="{!v.lunch.Course__c}" /></li>
+                        <li class="slds-item"><ui:outputText value="{!v.lunch.Desert__c}" /></li>
+                    </ul>
+                    <aura:set attribute="else">
+                        <ui:outputText value="{!v.lunch.Special_Menu__c}" />
+                    </aura:set>
+                </aura:if>
+            </p>
+        </lightning:card>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.displayLunchMeetups}">
+        <lightning:card >
+            <aura:set attribute="actions">
+                <aura:if isTrue="{!v.lunch != null}">
+                    <lightning:buttonIcon iconName="utility:new" variant="bare" onclick="{! c.newLunchMeetup }" alternativeText="Close window." />
+                    <lightning:buttonIcon iconName="utility:preview" variant="bare" onclick="{! c.viewLunchMeetups }" alternativeText="Close window." />
+                </aura:if>
+            </aura:set>
+            <aura:set attribute="title">
+                <span class="slds-avatar slds-avatar--circle slds-avatar--medium">
+                    <img src="/resource/lunch_group_icon"/>
+                </span>
+                &nbsp;&nbsp;
+                <span class="slds-text-heading--small">
+                    Lunch Meetups
+                </span>
+                <span class="slds-text-body--small">
+                    - {!v.lunchMeetups.length} available
+                </span>
+                <aura:if isTrue="{!v.lunchMeetups == null}">
+                    <span class="slds-text-body--small">
+                        &nbsp;- No Lunch Meetups Today.
+                    </span>
+                </aura:if>
+            </aura:set>
+            <p class="slds-p-horizontal--small">
+                <ul class="slds-has-dividers--top-space">
+                    <aura:iteration items="{!v.lunchMeetups}" var="lm" indexVar="ind">
+                        <li class="slds-item">
+                            <div class="slds-grid slds-wrap slds-grid--pull-padded">
+                                <div class="slds-p-horizontal--small slds-size--1-of-2 slds-medium-size--5-of-6 slds-large-size--8-of-12">
+                                    <span class="slds-avatar slds-avatar--circle slds-avatar--medium">
+                                        <img src="{!lm.CreatedBy.SmallPhotoUrl}"/>
+                                    </span>&nbsp;
+                                    <a class="lunch-meetup" data-index="{!ind}" onclick="{! c.viewLunchMeetup }">
+                                        {!lm.Name__c}
+                                    </a>
+                                </div>
+                                <div class="slds-p-horizontal--small slds-size--1-of-2 slds-medium-size--1-of-6 slds-large-size--4-of-12">
+                                    <lightning:badge label="{!lm.Type__c}" />
+                                </div>
+                            </div>
+                        </li>
+                    </aura:iteration>
+                </ul>
+            </p>
+        </lightning:card>
+    </aura:if>
+</aura:component>

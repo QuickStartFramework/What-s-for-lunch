@@ -1,0 +1,5 @@
+<design:component>
+	<design:attribute name="title" label="Title for Header" description="Title for Header" />
+    <design:attribute name="displayLunchMeetups" label="Display Lunch Meetups" description="Display Lunch Meetups" />
+    <design:attribute name="displayTodaysMenu" label="Display Today's Menu" description="Display Today's Menu" />   
+</design:component>

@@ -1,0 +1,8 @@
+.THIS {
+}
+.THIS .lunch-meetup {
+    text-decoration: none
+}
+.THIS .lunch-meetup:hover {
+    text-decoration: underline
+}
