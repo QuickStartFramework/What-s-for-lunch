@@ -21,12 +21,52 @@ public class LunchController {
         return lmh;
     }
     
+    @AuraEnabled
+    public static String addUserToLunchMeetup(String lunchMeetup) {
+        String userId = UserInfo.getUserId();
+        try {
+            System.debug('Lunch Management - ' + userId + ' - ' + lunchMeetup);
+            
+            Event e = [select id, subject, StartDateTime, WhatId, OwnerId
+                       from Event where WhatId =: lunchMeetup limit 1];
+            
+            EventRelation er = new EventRelation(EventId = e.Id, 
+                                                 RelationId = userId);
+            Database.DMLOptions dlo = new Database.DMLOptions();
+            dlo.EmailHeader.triggerUserEmail  = true;
+            dlo.EmailHeader.triggerOtherEmail  = true;
+            dlo.EmailHeader.triggerAutoResponseEmail = false;
+            Database.insert(er,dlo);
+            
+            //Verify if Participant already exists
+            List<Lunch_Participant__c> lpT = [select id, name from Lunch_Participant__c
+                                              where User__c =: userId AND Lunch_Meetup__c =: lunchMeetup];
+            if (lpT != null && lpT.size() > 0)
+            {
+                System.debug('Lunch Management - Participant is already attending the lunch meetup');
+                return 'You are already attending this lunch meetup';
+            }
+            
+            //Create Participant
+            Lunch_Participant__c lp = new Lunch_Participant__c();
+            lp.User__c = userId;
+            lp.Lunch_Meetup__c = lunchMeetup;
+            insert(lp);
+            
+            return 'Added';
+        }
+        catch (Exception ex) {
+            System.debug('Lunch Management - Error while adding Participant to Calendar Event, m=' + ex.getMessage());
+            return 'Error while adding Participant to Calendar Event, m=' + ex.getMessage();
+        }
+    }
+    
     private static List<Lunch_Meetup__c> getLunchMeetups() {
         try {
             List<Lunch_Meetup__c> lms = [select id, Name__c,
-                                   Address__c, Date__c,
-                                   Type__c, CreatedById
-                                   from Lunch_Meetup__c WHERE Date__c = TODAY LIMIT 10 ];
+                                         Address__c, Date__c,
+                                         Type__c, CreatedById
+                                         from Lunch_Meetup__c WHERE Date__c = TODAY LIMIT 10 ];
             return lms;
         }
         catch (Exception e) {
@@ -71,12 +111,12 @@ public class LunchController {
         try {
             List<Lunch_Meetup__c> lms = [select id, Name__c,
                                          Address__c, Date__c,
-                                         Type__c, CreatedBy.SmallPhotoUrl, Host_Profile_Picture__c 
+                                         Type__c, CreatedBy.SmallPhotoUrl 
                                          from Lunch_Meetup__c WHERE Date__c = TODAY LIMIT 10 ];
             
             if (lms == null)
                 return null;
-                        
+            
             return lms;
         } catch (Exception e) {
             System.debug('Lunch - Cannot retrieve todays lunch meetups, m=' + e.getMessage());

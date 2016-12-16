@@ -50,5 +50,32 @@
             "scope": 'Lunch_Meetup__c'
         });
         navEvt.fire();
+    },
+    
+    addUserToSelectedLunchMeetup: function(component, event) {
+        var index = event.getSource().get("v.value");
+        var recordId = component.get("v.lunchMeetups")[index].Id;
+        console.log(recordId);
+        var addUserAction = component.get("c.addUserToLunchMeetup");
+        addUserAction.setParams({ lunchMeetup : recordId});
+        addUserAction.setCallback(this, function(a) {
+            var toastEvent = $A.get("e.force:showToast");
+            if (a.getReturnValue() == 'Added') {
+                toastEvent.setParams({
+                    "title": "Success!",
+                    "message": "You are registered to the Lunch Meetup.",
+                    'type' : 'success'
+                });
+            } else {
+                toastEvent.setParams({
+                    "title": 'Warning',
+                    "message": a.getReturnValue(),
+                    "type": 'Warning'
+                });
+            }
+                
+            toastEvent.fire();
+        });
+        $A.enqueueAction(addUserAction);
     }
 })

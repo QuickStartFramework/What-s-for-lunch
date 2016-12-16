@@ -41,5 +41,13 @@
         <members>*</members>
         <name>CustomTab</name>
     </types>
+    <types>
+        <members>*</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexTrigger</name>
+    </types>
     <version>37.0</version>
 </Package>

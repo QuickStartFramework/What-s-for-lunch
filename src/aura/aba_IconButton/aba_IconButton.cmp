@@ -1,0 +1,10 @@
+<aura:component >
+
+    <aura:attribute name="value" type="String" access="global" description="Button value"/> 
+    <aura:attribute name="iconName" type="String" access="global" description="IconName value"/> 
+    <aura:attribute name="iconCategory" type="String" access="global" description="IconName value"/> 
+    <aura:registerEvent name="onclick" type="c:evtDOMEvent"/>
+
+    <lightning:buttonIcon value="{!v.value}" iconName="{!v.iconName}" variant="bare" onclick="{!c.triggerOnClickEvent}" alternativeText="Close window." />
+
+</aura:component>
